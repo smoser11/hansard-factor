@@ -19,7 +19,7 @@ library(iterators)
 registerDoParallel()
 
 NCores = multicore:::detectCores()
-NCores = 2
+#NCores = 2
 
 ###### Functions for conditional draws
 
