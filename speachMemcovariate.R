@@ -23,9 +23,10 @@ Y = as.matrix(Y)
 X = as.matrix(X)
 
 ## Run the MCMC and extract the summaries
-mcmc1 = countfactormcmc(Y, X, K=K, nmc=10, burn=0, verbose=1)
+mcmc1 = countfactormcmc(Y, X, K=K, nmc=1000, burn=500, keep=5, verbose=1)
 
-bhat = apply(mcmc1$loadings,c(1,2), mean)
+bhat.counts = apply(mcmc1$loadingsCounts,c(1,2), mean)
+bhat.numerical = apply(mcmc1$loadingsNumerical,c(1,2), mean)
 ahat = colMeans(mcmc1$intercept)
 muhat = colMeans(mcmc1$factormeans) 
 

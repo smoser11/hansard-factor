@@ -5,6 +5,7 @@ library(foreach)
 library(iterators)
 library(doMC)
 registerDoMC()
+library(RcppArmadillo)
 sourceCpp("nbtools.cpp")
 #registerDoParallel()
 
@@ -43,13 +44,11 @@ drawloadings.counts = function(Y, factorscores, omegamatrix, factormeans, overdi
 	K = ncol(factorscores)
 	if(missing(priorprecision)) priorprecision = diag(0.01,K)
 	chunksize = ceiling(P/NCores)
-	alpha = as.matrix(intercept)
 	loadings = foreach(	omega = iter(omegamatrix, by='col', chunksize=chunksize),
 						y = iter(Y, by='col', chunksize=chunksize),
-						a = iter(alpha,by='row',chunksize=chunksize),
 						.combine='rbind')	%dopar% {		
 		#b = matrix(drawloadingsBlockC(y, factorscores, omega, factormeans, overdisp, diag(0,K))$loadings, ncol=K)
-		b = drawloadingsBlock.counts(y, factorscores, omega, factormeans, a, overdisp)
+		b = drawloadingsBlock.counts(y, factorscores, omega, factormeans, overdisp)
 		b
 	}
 	a = loadings[,1]
@@ -57,7 +56,7 @@ drawloadings.counts = function(Y, factorscores, omegamatrix, factormeans, overdi
 	list(a=a, b=b)
 }
 
-drawloadingsBlock.counts = function(Y, factorscores, omegamatrix, factormeans, intercept, overdisp, priorprecision=NULL)
+drawloadingsBlock.counts = function(Y, factorscores, omegamatrix, factormeans, overdisp, priorprecision=NULL)
 # factorscores is an NxK matrix of factor scores
 # Z is an NxP matrix of pseudo-data, each row a single unit
 # omegamatrix is an NxP matrix of augmentation variables, one-to-one with Y
@@ -161,55 +160,62 @@ drawfactormeans = function(Y, factorscores, omegamatrix, intercept, loadings, ov
 }
 
 
-drawscores = function(Y, X, b.counts, b.numerical, omegamatrix, factormeans, intercept, overdisp, factorprecision=NULL)
-# loadings is a PxK matrix of factor loadings
-# Y is an NxP matrix of observations, each row a single unit
+drawscores = function(Y, X, b.counts, b.numerical, omegamatrix, a.counts, a.numerical, overdisp, factorprecision=NULL)
+# b.counts is a PxK matrix of factor loadings for count outcomes
+# b.numerical is is a DxK matrix of factor loadings for the numerical outcomes
+# Y is an NxP matrix of count observations, each row a single unit
+# X is an NxD matrix of numerical observations/covariates, each row a single unit
 # omegamatrix is an NxP matrix of augmentation variables, one-to-one with Y
+# a.counts and a.numerical are the feature-level intercepts
+# overdisp is the NB overdispersion parameter
 {
 	NCores = multicore:::detectCores()
 	N = nrow(Y)
-	K = ncol(loadings)
-	if(missing(factorprecision)) factorprecision = diag(1,K)
-	partialpredictor = cbind(intercept,1) %*% rbind(1, factormeans)
-	partialpredictor = t(partialpredictor)
+	K = ncol(b.counts)
+	if(missing(factorprecision)) factorprecision = diag(1,K+1)
 	chunksize = ceiling(N/NCores)
-	factorscores = foreach(	omega = iter(omegamatrix, by='row', chunksize=chunksize),
+	factorscores = foreach(	om = iter(omegamatrix, by='row', chunksize=chunksize),
 						y = iter(Y, by='row', chunksize=chunksize),
 						x = iter(X, by='row', chunksize=chunksize),
-						eta = iter(partialpredictor,by='row',chunksize=chunksize),
 						.combine='rbind')	%dopar% {
-		scores = drawscoresBlock(y, x, b.counts, b.numerical, omega, eta, overdisp, factorprecision)
+		scores = drawscoresBlock(y, x, b.counts, b.numerical, om, a.counts, a.numerical, overdisp, factorprecision)
 		scores;
 	}
-	factorscores
+	factorscores;
+	# mu = factorscores[,1]
+	# f = factorscores[,2:(K+1)]
+	# list(mu=mu, f=f)
 }
 
-drawscoresBlock = function(Y, X, b.counts, b.numerical, omegamatrix, partialpredictor, overdisp, factorprecision=NULL)
+drawscoresBlock = function(Y, X, b.counts, b.numerical, omegamatrix, a.counts, a.numerical, overdisp, factorprecision=NULL)
+# loadings is a PxK matrix of factor loadings
+# Y is an NxP matrix of observations, each row a single unit
+# omegamatrix is an NxP matrix of augmentation variables, one-to-one with Y
 {
 	N = nrow(Y)
 	P = ncol(Y)
 	D = ncol(X)
 	K = ncol(b.counts)
-	Eye = diag(1,K)
-	if(missing(factorprecision)) factorprecision = diag(1,K)
-	factorscores = matrix(0, nrow=N, ncol=K)
+	Eye = diag(1,K+1)
+	if(missing(factorprecision)) factorprecision = diag(1,K+1)
+	factorscores = matrix(0, nrow=N, ncol=K+1)
+	design = rbind(b.numerical, b.counts)
+	design = cbind(1, design)
 	for(i in 1:N)
 	{
-		z = (Y[i,] - overdisp)/{2*omegamatrix[i,]} - partialpredictor[i,]
-		outcome = as.numeric(c(X[i,], z))
-		design = rbind(b.numerical, b.counts)
+		z = (Y[i,] - overdisp)/{2*omegamatrix[i,]}
+		outcome = as.numeric(c(X[i,], z)) - c(a.numerical, a.counts)
 		errorprec = as.numeric(c(rep(1, D), omegamatrix[i,]))
 		postprec = crossprod(design, errorprec*design) + factorprecision
 		L = t(chol(postprec))
 		Li = forwardsolve(L, Eye)
 		postvar = crossprod(Li)
 		postmean = postvar %*% {crossprod(design, errorprec*outcome)}
-		factorscores[i,] = postmean + crossprod(Li, rnorm(K))
+		factorscores[i,] = postmean + crossprod(Li, rnorm(K+1))
 		#factorscores[i,] = rmvnorm(1, postmean, postvar)
 	}
-	factorscores
+	as.matrix(factorscores)
 }
-
 
 # drawscoresBlock = function(Y, loadings, omegamatrix, partialpredictor, overdisp, factorprecision=NULL)
 # {
@@ -236,7 +242,7 @@ drawscoresBlock = function(Y, X, b.counts, b.numerical, omegamatrix, partialpred
 
 
 ### Main MCMC function
-countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, verbose=NULL)
+countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, keep = 1, verbose=NULL)
 # Y is a (numsamples X numfeatures) matrix of count outcomes
 # Y is a (numsamples X D) matrix of numerical covariates (right now including binary)
 # K is the number of factors
@@ -251,7 +257,8 @@ countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, verbose=NULL
 	numtrials = Y + overdisp
 	
 	# Set up placeholders to save the relevant draws
-	save.loadings = array(0, dim=c(P,K,nmc))
+	save.loadingsCounts = array(0, dim=c(P,K,nmc))
+	save.loadingsNumerical = array(0, dim=c(D,K,nmc))
 	save.intercept = matrix(0, nmc, P)
 	save.factormeans = matrix(0, nmc, N)
 	
@@ -265,7 +272,7 @@ countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, verbose=NULL
 	factormeans = rep(0,N)
 	
 	# Main loop
-	for(draw in 1:(nmc+burn))
+	for(draw in 1:(nmc*keep+burn))
 	{
 		if(draw %% verbose == 0) cat("\tDraw", draw, "\n")
 		
@@ -279,16 +286,18 @@ countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, verbose=NULL
 		loadings.numerical = drawloadings.numerical(X, factorscores)
 		a.numerical = loadings.numerical$a; b.numerical = loadings.numerical$b
 		
-		factormeans = drawfactormeans(Y, factorscores, omega, a.counts, b.counts, overdisp)
-		factorscores = drawscores(Y, X, b.counts, b.numerical, omega, factormeans, intercept=a.counts, overdisp=overdisp)
+		scoredraw = drawscores(Y, X, b.counts, b.numerical, omega, a.counts, a.numerical, overdisp)
+		factormeans = scoredraw[,1]
+		factorscores = scoredraw[,2:(K+1)]
 
 		# save draws
-		if(draw > burn)
+		if(draw > burn && (draw - burn) %% keep == 0)
 		{
-			save.loadings[,,draw-burn] = b
-			save.intercept[draw-burn,] = a
-			save.factormeans[draw-burn,] = factormeans
+			save.loadingsCounts[,,(draw-burn)/keep] = b.counts
+			save.loadingsNumerical[,,(draw-burn)/keep] = b.numerical
+			save.intercept[(draw-burn)/keep,] = a.counts
+			save.factormeans[(draw-burn)/keep,] = factormeans
 		}
 	}
-	list(loadings = save.loadings, intercept = save.intercept, factormeans = save.factormeans)
+	list(loadingsCounts = save.loadingsCounts, loadingsNumerical = save.loadingsNumerical, intercept = save.intercept, factormeans = save.factormeans)
 }
