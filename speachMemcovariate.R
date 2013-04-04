@@ -29,9 +29,9 @@ Y = as.matrix(Y)
 X = as.matrix(X)
 
 ## Run the MCMC and extract the summaries
-ndraws = 20
-nburn = 5
-thin = 2
+ndraws = 200
+nburn = 50
+thin = 5
 mcmc1 = countfactormcmc(Y, X, K=K, nmc=ndraws, burn=nburn, keep=thin, verbose=1)
 
 
@@ -112,3 +112,4 @@ for(i in 1:ndraws)
 	speeches.lab = factorscores[-consind,,i]
 	LtoCVolumeRatio[i] = det(cov(speeches.lab))/det(cov(speeches.cons))
 }
+hist(LtoCVolumeRatio)
