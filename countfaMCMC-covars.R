@@ -299,8 +299,8 @@ countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, keep = 1, ve
 			save.loadingsNumerical[,,(draw-burn)/keep] = b.numerical
 			save.interceptCounts[(draw-burn)/keep,] = a.counts
 			save.interceptNumerical[(draw-burn)/keep,] = a.numerical
-			#save.factorscores[,,(draw-burn)/keep] = factorscores
-			#save.factormeans[(draw-burn)/keep,] = factormeans
+			save.factorscores[,,(draw-burn)/keep] = factorscores
+			save.factormeans[(draw-burn)/keep,] = factormeans
 		}
 	}
 	list(	loadingsCounts = save.loadingsCounts, loadingsNumerical = save.loadingsNumerical,
