@@ -259,7 +259,9 @@ countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, keep = 1, ve
 	# Set up placeholders to save the relevant draws
 	save.loadingsCounts = array(0, dim=c(P,K,nmc))
 	save.loadingsNumerical = array(0, dim=c(D,K,nmc))
-	save.intercept = matrix(0, nmc, P)
+	save.interceptCounts = matrix(0, nmc, P)
+	save.interceptNumerical = matrix(0, nmc, D)
+	save.factorscores = array(0, dim=c(N,K,nmc))
 	save.factormeans = matrix(0, nmc, N)
 	
 	# Initialize the chain
@@ -295,9 +297,13 @@ countfactormcmc = function(Y, X, K, overdisp=1, burn=50, nmc = 500, keep = 1, ve
 		{
 			save.loadingsCounts[,,(draw-burn)/keep] = b.counts
 			save.loadingsNumerical[,,(draw-burn)/keep] = b.numerical
-			save.intercept[(draw-burn)/keep,] = a.counts
-			save.factormeans[(draw-burn)/keep,] = factormeans
+			save.interceptCounts[(draw-burn)/keep,] = a.counts
+			save.interceptNumerical[(draw-burn)/keep,] = a.numerical
+			#save.factorscores[,,(draw-burn)/keep] = factorscores
+			#save.factormeans[(draw-burn)/keep,] = factormeans
 		}
 	}
-	list(loadingsCounts = save.loadingsCounts, loadingsNumerical = save.loadingsNumerical, intercept = save.intercept, factormeans = save.factormeans)
+	list(	loadingsCounts = save.loadingsCounts, loadingsNumerical = save.loadingsNumerical,
+			interceptCounts = save.interceptCounts, interceptNumerical = save.interceptNumerical,
+			factorscores = save.factorscores, factormeans = save.factormeans)
 }
