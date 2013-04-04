@@ -113,3 +113,17 @@ for(i in 1:ndraws)
 	LtoCVolumeRatio[i] = det(cov(speeches.lab))/det(cov(speeches.cons))
 }
 hist(LtoCVolumeRatio)
+
+
+# Plot locations of speeches in two of the K dimensions
+i = 1; j=9
+plot(factors.postmean[,c(i,j)])
+points(factors.postmean[consind,c(i,j)], col='red', pch=19)
+points(factors.postmean[-consind,c(i,j)], col='blue', pch=19)
+
+# Pick out the most and least Conservative words by looking
+# at the posterior mean covariance matrix of the latent linear predictors
+PostCovHat = tcrossprod(loadings.postmean)
+conswordorder = order(PostCovHat[1,(D+1):(D+P)], decreasing=TRUE)
+head(colnames(Y)[conswordorder], 20)
+tail(colnames(Y)[conswordorder], 20)
