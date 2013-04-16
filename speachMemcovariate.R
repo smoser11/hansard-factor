@@ -1,16 +1,22 @@
 source("countfaMCMC-covars.R")
 
-fulldata = read.csv("speachMemcovariateDTM.csv")
+fulldata = read.csv("speachMemcovariateDTM.csv")  #2310 speaches by 8468 words + covariates (in columns c(2:12, 8480) )
 
-# Y: word counts
+# Y: word counts, 
 # X: continuous covariates
-Y = fulldata[,15:ncol(fulldata)]
+
+Y = fulldata[,13:ncol(fulldata)-1] #last col of fulldata is 0/1 year67 (see below)
 
 speakernames = fulldata$memberID
-
-conservative = {fulldata[,3] + fulldata[,5]}
-X = fulldata[, c(9:12, 14)]
-X = cbind(conservative, X)
+#4=party2c (1 for Conservative, 0 for Liberal)
+#5:6 = "type.xcounty" and  "type.xuniversity" for constituency type
+#7:9 = "country.xireland"  "country.xscotland" "country.xwales"  for region
+#10=malaportionment (>0 means overrepresented in HoC, <0 means underrepresented)
+#11=miniTRUE (1 if speaker was a minsiter, 0 else)
+#12= popchg (percent increase or decrease of population from 1851 to 1861)
+#8480 = year67 (1 if speech was given in 1867, 0 if given in 1866)
+X = fulldata[, c(4,5:6,10,12)] 
+X$year67<-fulldata[,8480]
 
 # Data set properties
 N = nrow(Y)

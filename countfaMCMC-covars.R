@@ -9,12 +9,13 @@ library(RcppArmadillo)
 sourceCpp("nbtools.cpp")
 #registerDoParallel()
 
-
+NCores = multicore:::detectCores()
+	
 ###### Functions for conditional draws
 
 drawomegamatrix = function(numtrials, linearpredictor)
 {
-	NCores = multicore:::detectCores()
+
 	P = ncol(numtrials)
 	chunksize = ceiling(P/NCores)
 	# Using a parallel for comprehension from foreach
@@ -39,7 +40,7 @@ drawloadings.counts = function(Y, factorscores, omegamatrix, factormeans, overdi
 # Y is an NxP matrix of counts, each row a single unit
 # omegamatrix is an NxP matrix of augmentation variables, one-to-one with Y
 {
-	NCores = multicore:::detectCores();
+#	NCores = multicore:::detectCores();
 	P = ncol(Y)
 	K = ncol(factorscores)
 	if(missing(priorprecision)) priorprecision = diag(0.01,K)
@@ -146,7 +147,7 @@ drawloadings.numerical = function(X, factorscores, priorprecision=NULL)
 drawfactormeans = function(Y, factorscores, omegamatrix, intercept, loadings, overdisp)
 # Draw the intercept of length P
 {
-	NCores = multicore:::detectCores()
+#	NCores = multicore:::detectCores()
 	partialpredictor = cbind(intercept,loadings) %*% rbind(1, t(factorscores))
 	partialpredictor = t(partialpredictor)
 	P = ncol(Y)
@@ -169,7 +170,7 @@ drawscores = function(Y, X, b.counts, b.numerical, omegamatrix, a.counts, a.nume
 # a.counts and a.numerical are the feature-level intercepts
 # overdisp is the NB overdispersion parameter
 {
-	NCores = multicore:::detectCores()
+#	NCores = multicore:::detectCores()
 	N = nrow(Y)
 	K = ncol(b.counts)
 	if(missing(factorprecision)) factorprecision = diag(1,K+1)
