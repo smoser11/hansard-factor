@@ -1,0 +1,15 @@
+{
+    "contents" : "## Use the R_HOME indirection to support installations of multiple R version\nPKG_LIBS = `$(R_HOME)/bin/Rscript -e \"Rcpp:::LdFlags()\"` $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)\n\n",
+    "created" : 1368412988294.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "964241795",
+    "id" : "95818002",
+    "lastKnownWriteTime" : 1365993959,
+    "path" : "~/Documents/Research/political_science/testpkg1/src/Makevars",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "text"
+}

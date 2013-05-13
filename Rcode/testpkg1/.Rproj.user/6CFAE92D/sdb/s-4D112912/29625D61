@@ -1,0 +1,15 @@
+{
+    "contents" : "Package: NBfactor\nType: Package\nTitle: NB factor model analysis\nVersion: 1.0\nDate: 2013-04-14\nAuthor: Liang Sun\nMaintainer: Who to complain to <yourfault@somewhere.net>\nDescription: More about what it does (maybe more than one line)\nLicense: What license is it under?\nDepends: Rcpp (>= 0.10.2), RcppArmadillo (>= 0.3.800.1)\nLinkingTo: Rcpp, RcppArmadillo\n",
+    "created" : 1368413056482.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1422803659",
+    "id" : "29625D61",
+    "lastKnownWriteTime" : 1368413120,
+    "path" : "~/Documents/Research/political_science/testpkg1/DESCRIPTION",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "dcf"
+}

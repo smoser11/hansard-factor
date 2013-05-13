@@ -1,0 +1,15 @@
+{
+    "contents" : "getCleanProdData<- function(fileNamePostfix) {\n  prodD.full<-read.csv(paste('../productionFiles/EFProdData-GEO-',fileNamePostfix, '.csv', sep='')) \n  \n  #filters\n  g3<-which(prodD.full$monthsProduced>=3)\n  datP<-prodD.full[g3,]\n  \n  data(expectedLogDColNames)\n  \n  datP.use.cols<-as.character(expectedLogDColNames[-c(1:2),1])#removing lat/longs\n  \n  cols<-c()\n  for(i in 1:length(datP.use.cols)){\n    use.i<-which(colnames(datP)==datP.use.cols[i])\n    cols<-c(cols,use.i)\n  }\n  datP.use<-datP[,cols]\n  \n  Bknots<-matrix(NA,ncol=2,nrow=ncol(datP.use))\n  for(b in 1:ncol(datP.use)){\n    #print(colnames(datP.use)[b])\n    bs.b<-bs(datP.use[,b],degree=3)\n    save(bs.b,file=paste(b,'spline'))\n    colnames(bs.b)<-paste(colnames(datP.use)[b],letters[1:ncol(bs.b)],sep='.')\n    Bknots[b,1]<-attr(bs.b,'Boundary.knots')[1]\n    Bknots[b,2]<-attr(bs.b,'Boundary.knots')[2]\n    datP.use<-cbind(datP.use,bs.b)\n  }\n  write.csv(Bknots,file=paste(fileNamePostfix,'Bknots.csv',sep='-'))\n  prod<-list(full=prodD.full, datP=datP, datP.use=datP.use)\n}",
+    "created" : 1366323504127.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2178830814",
+    "id" : "89005536",
+    "lastKnownWriteTime" : 1363192846,
+    "path" : "~/Documents/course_project/digeo/Rfiles/efgrading/packages/DIRLib/R/getCleanProdData.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
