@@ -1,0 +1,16 @@
+{
+    "contents" : "### Summary\n### DrillingInfo data + DrillingInfo Prediction\n\ncompare <- function(data, prod, iterN){\n  errorM = matrix(0, iterN, 4)\n  for(iter in 1:iterN){\n    set.seed(1976+iter+100)\n    samp<-sample(1:nrow(data),nrow(data)*per.in)\n    error1 = predDrilling(data, prod, samp)\n    errorM[iter,1:2] = error1\n    error2 = mypred(data, prod, samp)\n    errorM[iter,3:4] = error2\n    \n  }\n  \n  return(errorM)\n  \n}\n\nDril.error = compare(datP.use,prod,1000);\nKun.error = compare(datP.use.kun,prod,1000);",
+    "created" : 1367179210930.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3226459306",
+    "id" : "525BB5C4",
+    "lastKnownWriteTime" : 1367253368,
+    "path" : "~/Documents/course_project/digeo/myproject/totaltest.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

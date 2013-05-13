@@ -1,0 +1,16 @@
+{
+    "contents" : "datP<-prodkun$datP\ndatP.use<-prodkun$datP.use\n\ncols<-c()\nfor(i in 1:length(datP.use.cols)){\n  use.i<-which(colnames(datP.kun)==datP.use.cols[i])\n  cols<-c(cols,use.i)\n}\n\nBknots<-matrix(NA,ncol=2,nrow=ncol(datP.use.kun))\nfor(b in 1:ncol(datP.use.kun)){\n  #print(colnames(datP.use)[b])\n  bs.b<-bs(datP.use.kun[,b],degree=3)\n  save(bs.b,file=paste(b,'spline'))\n  colnames(bs.b)<-paste(colnames(datP.use.kun)[b],letters[1:ncol(bs.b)],sep='.')\n  Bknots[b,1]<-attr(bs.b,'Boundary.knots')[1]\n  Bknots[b,2]<-attr(bs.b,'Boundary.knots')[2]\n  datP.use.kun<-cbind(datP.use.kun,bs.b)\n}\n\neProd.kun<-(datP.kun$maxIpGas/20)+datP.kun$maxIpOil\n\nuse.kun<-which(datP.kun$heelFormation=='Structure_Buda'|datP.kun$heelFormation=='Structure_Edwards')\n\ndatP.use.kun<-datP.use.kun[use,]\ndatP.kun<-datP.kun[use,]\neProd<-eProd[use]\n\nerrorComp = matrix(0, iterN, 4)\nfor(iter in 1:iterN){\n  set.seed(2976+iter)\n  samp<-sample(1:nrow(data),nrow(data)*per.in)\n  error1 = mypred(data, prod, samp)\n  errorComp[iter,1:2] = error1\n  error2 = mypred(data.kun, prod.kun, samp)\n  errorComp[iter,3:4] = error2\n}\n\n\n\n\n",
+    "created" : 1367175480628.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1143729743",
+    "id" : "237F3DFC",
+    "lastKnownWriteTime" : 1366339259,
+    "path" : "~/Documents/course_project/digeo/myproject/test_kun.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

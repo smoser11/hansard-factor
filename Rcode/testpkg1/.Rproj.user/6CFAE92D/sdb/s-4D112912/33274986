@@ -1,0 +1,21 @@
+{
+    "contents" : "",
+    "created" : 1367179614385.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "33274986",
+    "lastKnownWriteTime" : 4294901763,
+    "path" : null,
+    "properties" : {
+        "caption" : "datP.use.kun",
+        "contentUrl" : "content?title=datP.use.kun&file=de4a7271c81b4c319243f8c62c664b92.htm",
+        "displayedObservations" : 1000,
+        "displayedVariables" : 100,
+        "totalObservations" : 1544,
+        "variables" : 132
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

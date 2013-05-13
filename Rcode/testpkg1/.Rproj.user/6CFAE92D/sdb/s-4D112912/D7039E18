@@ -1,0 +1,15 @@
+{
+    "contents" : "#ifndef _NBFACTOR_NBFACTOR_H\n#define _NBFACTOR_NBFACTOR_H\n\n#include <RcppArmadillo.h>\n\nRcppExport SEXP NBfactor() ;\n\n#endif\n",
+    "created" : 1368413004972.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2225953148",
+    "id" : "D7039E18",
+    "lastKnownWriteTime" : 1368413021,
+    "path" : "~/Documents/Research/political_science/testpkg1/src/NBfactor.h",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "h"
+}

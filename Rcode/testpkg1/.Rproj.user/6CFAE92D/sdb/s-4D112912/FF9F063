@@ -1,0 +1,21 @@
+{
+    "contents" : "",
+    "created" : 1367180516911.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "FF9F063",
+    "lastKnownWriteTime" : 1366339259,
+    "path" : null,
+    "properties" : {
+        "caption" : "error.kun",
+        "contentUrl" : "content?title=error.kun&file=fef86d4ca9bb46b49e337c0a6c984eb7.htm",
+        "displayedObservations" : 1000,
+        "displayedVariables" : 35,
+        "totalObservations" : 1781,
+        "variables" : 35
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}
