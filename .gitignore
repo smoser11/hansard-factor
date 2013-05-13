@@ -1,1 +1,5 @@
 *.RData
+loadings.predictors.csv
+loadings.topics.csv
+factors.postmean.csv
+factors.postvar.csv
