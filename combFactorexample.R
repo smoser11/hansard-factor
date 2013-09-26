@@ -4,9 +4,10 @@ CountY66 = as.matrix(data66[,13:(ncol(fulldata)-1)] )        # Count Data for NB
 Logit66 = as.matrix(data66[,c(4,5,6,11)])                    # Logit Data for Logistic Factor
 ContY66 = as.matrix(data66[,10])                             # Continuous Data For Factor
 
+new.CountY66 =CountY66[,-which(colMeans(CountY66) == 0)]
 
-N = dim(CountY66)[1]
-P = dim(CountY66)[2]
+N = dim(new.CountY66)[1]
+P = dim(new.CountY66)[2]
 Pl = dim(Logit66)[2]
 Pc = dim(ContY66)[2]
 
@@ -63,4 +64,4 @@ names(testPrior) = c("mean_alpha","a_c","niu_a_c","niu_alpha_c","niu_c","nu0","s
 testInitial = list(B,f,alpha,gamma,B_l,alpha_l,gamma_l,B_c,alpha_c,gamma_c);
 names(testInitial) = c("B","f","alpha","gamma","B_l","alpha_l","gamma_l","B_c","alpha_c","gamma_c");
 
-result66 = CombFactor(ContY66,Logit66,CountY66, testPrior,testInitial,10,10000,0);
+result66 = CombFactor(ContY66,Logit66,new.CountY66, testPrior,testInitial,10,10000,0);
